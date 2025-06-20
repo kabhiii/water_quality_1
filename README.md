@@ -1,105 +1,82 @@
-# -------------------------------
-# 🌊 Water Quality Prediction Task 1
-# Internship Project - Edunet AI-ML
-# -------------------------------
+# Week-1  
+This machine learning project focuses on predicting whether water is safe for consumption by analyzing various chemical parameters. Developed during the Shell-Edunet Skills4Future Internship (June–July 2025), it marks my first hands-on experience in AI/ML and represents a meaningful step toward sustainable, data-driven solutions.
 
-# ✅ STEP 1: Install & Import Required Libraries
-# !pip install pandas numpy matplotlib seaborn scikit-learn  # Uncomment if needed
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+# 🌊 Water Quality Prediction Using Machine Learning
 
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+> **“Turning chemical signals into clarity — one prediction at a time.”**
 
-# ✅ STEP 2: Load and Explore Dataset
-print("\n--- Loading Dataset ---")
-df = pd.read_csv('PB_All_2000_2021.csv', sep=';')
-print(f"\nDataset Shape: {df.shape}")
+---
 
-# Initial Exploration
-print("\n--- Dataset Info ---")
-print(df.info())
+## 📌 Project Overview
 
-print("\n--- Missing Values ---")
-print(df.isnull().sum())
+This initiative, completed under the Edunet Foundation AI-ML Internship, utilizes historical water sample data collected from Punjab (2000–2021) to predict critical water quality indicators. By applying machine learning techniques, the model provides estimations for pollutant levels, supporting safer water management and environmental protection efforts.
 
-print("\n--- Statistical Summary ---")
-print(df.describe().T)
+As clean water becomes increasingly vital due to rising pollution and climate change, predictive modeling helps enable early warnings and promotes long-term ecological sustainability.
 
-# Display sample data
-print("\n--- Sample Data (Before Processing) ---")
-print(df.head())
+---
 
-# ✅ STEP 3: Data Cleaning & Feature Engineering
-print("\n--- Cleaning & Feature Engineering ---")
+## ⚙️ Technologies Used
 
-# Convert date column
-df['date'] = pd.to_datetime(df['date'], format='%d.%m.%Y')
+- **Python** — Primary language for development  
+- **Pandas** — Data manipulation and cleaning  
+- **NumPy** — Efficient numerical computation  
+- **Matplotlib & Seaborn** — Visual data exploration  
+- **Scikit-learn** — Core ML algorithms and evaluation tools
 
-# Extract date features
-df['year'] = df['date'].dt.year
-df['month'] = df['date'].dt.month
+---
 
-# Sort by station and time
-df = df.sort_values(by=['id', 'date'])
+## 💧 Predicted Water Quality Parameters
 
-# Handle missing values with median imputation
-print("\nPerforming median imputation for missing values...")
-df.fillna(df.median(numeric_only=True), inplace=True)
+The model estimates the concentrations of key chemical substances such as:
 
-# Verify cleaning
-print("\n--- Missing Values After Cleaning ---")
-print(df.isnull().sum())
+- **O₂** (Dissolved Oxygen)  
+- **NO₃** (Nitrates)  
+- **NO₂** (Nitrites)  
+- **SO₄** (Sulfates)  
+- **PO₄** (Phosphates)  
+- **Cl⁻** (Chlorides)
 
-print("\n--- Sample Data (After Processing) ---")
-print(df.head())
+These indicators are essential in assessing the usability of water for human consumption, agriculture, and aquatic ecosystems.
 
-# ✅ STEP 4: Define Features and Targets
-features = ['NH4', 'BSK5', 'Suspended', 'year', 'month']
-targets = ['O2', 'NO3', 'NO2', 'SO4', 'PO4', 'CL']
+---
 
-X = df[features]
-y = df[targets]
+## 🤖 Model & Methodology
 
-# ✅ STEP 5: Split into Train and Test Sets
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-print(f"\nTrain/Test Split: {X_train.shape[0]} train, {X_test.shape[0]} test samples")
+- **Model Used**: A `RandomForestRegressor` wrapped inside `MultiOutputRegressor` to predict multiple parameters simultaneously.  
+- **Features Used**:  
+  - NH₄ (Ammonium)  
+  - BSK5 (5-day Biochemical Oxygen Demand)  
+  - Suspended Solids  
+  - Year  
+  - Month  
 
-# ✅ STEP 6: Train MultiOutput RandomForest Regressor
-print("\n--- Model Training ---")
-model = MultiOutputRegressor(RandomForestRegressor(random_state=42))
-model.fit(X_train, y_train)
-print("Training completed!")
+- **Missing Data Handling**: Median-based imputation  
+- **Data Split Ratio**: 80% for training, 20% for testing  
+- **Evaluation Metrics**:  
+  - R² Score — measures model fit  
+  - Mean Squared Error — quantifies prediction error
 
-# ✅ STEP 7: Make Predictions and Evaluate
-print("\n--- Model Evaluation ---")
-y_pred = model.predict(X_test)
+---
 
-for i, col in enumerate(targets):
-    print(f"\n--- {col} ---")
-    print(f"R² Score: {r2_score(y_test[col], y_pred[:, i]):.4f}")
-    print(f"MSE: {mean_squared_error(y_test[col], y_pred[:, i]):.4f}")
+## 📊 Model Performance Snapshot
 
-# ✅ STEP 8: Visualize Predictions
-print("\nGenerating visualizations...")
-plt.style.use('seaborn')
+| Parameter | R² Score | Mean Squared Error |
+|-----------|----------|--------------------|
+| O₂        | 0.82     | 3.12               |
+| NO₃       | 0.85     | 2.45               |
+| NO₂       | 0.78     | 0.09               |
+| SO₄       | 0.87     | 120.55             |
+| PO₄       | 0.80     | 0.07               |
+| CL        | 0.91     | 140.34             |
 
-for i, col in enumerate(targets):
-    plt.figure(figsize=(8, 4))
-    sns.regplot(x=y_test[col], y=y_pred[:, i], 
-                scatter_kws={'alpha':0.5, 'color':'blue', 'edgecolor':'k'},
-                line_kws={'color':'red'})
-    plt.xlabel(f"Actual {col}")
-    plt.ylabel(f"Predicted {col}")
-    plt.title(f"{col}: Actual vs Predicted (R² = {r2_score(y_test[col], y_pred[:, i]):.2f})")
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
+> *(Note: These values are sample placeholders — replace with actual evaluation results.)*
 
-print("\n✅ Analysis Complete!")
+---
+
+## ✅ Final Notes
+
+This project demonstrates how machine learning can be effectively applied to monitor environmental quality, particularly in water resource management. With additional features like rainfall data, land use patterns, or industrial mapping, this model can be scaled for broader deployment and better accuracy in real-time applications.
+
+---
+
+**Built with 💻, ☕, and sip of clean water by Abhinandan Kumar**
